@@ -35,6 +35,27 @@ function loadData() {
             "class": "my-new-list",
             html: items.join("")
         }).appendTo("body");
+    }).error(function() { $nytHeaderElem.text("ERROR PANIC!")});
+
+    var wikiRequestTimeout = setTimeout(function(){
+
+        $wikiElem.text("failed to get wikipedia resources");
+    },5000);
+    var wikiURL = "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + cityVal + "&format=json&callback=wikiCallback";
+    $.ajax({
+        url:wikiURL,
+        dataType:"jsonp",
+        success: function(response){
+            var articleList = response[1];
+
+            for(var i = 0; i < articleList.length; i++){
+                articleStr = articleList[i];
+                var url = 'http://en.wikipedia.org/wiki/' + articleStr;
+                $wikiElem.append('<li><a href="' + url + '">' + articleStr + '</a></li>');
+            }
+            clearTimeout(wikiRequestTimeout)
+        }
+
     });
 
     return false;
